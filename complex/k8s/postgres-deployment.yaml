@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      # we want a volume inside the pod as well. Therefore we are declaring it
+      # inside the spec part
+      volumes:
+        - name: postgres-database
+          persistentVolumeClaim:
+            claimName: database-presistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          # The volume is created inside the pod. In order to make it available
+          # to use by container, we will have to specify the mountPath.
+          volumeMounts:
+            - name: postgres-database
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres # This sub-path is specifically required for postgres.
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

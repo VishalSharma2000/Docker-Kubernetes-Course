@@ -1,0 +1,14 @@
+# The idea of having a different specification for presistent volume claim
+# is to list down all the different requirement the storage should have.
+# In this file we can list down various different configurations we want
+# for the persistent volume
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
